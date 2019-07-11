@@ -1,0 +1,53 @@
+{
+  "name": "vscode-typescript-dev",
+  "displayName": "TSC Dev",
+  "description": "An extension for working in the TypeScript codebasegh",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "publisher": "Orta",
+  "engines": {
+    "vscode": "^1.36.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/src/compiler/checker.ts"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "io.orta.typescript-dev.declare-current-test-file",
+        "title": "TSC: Declare current test file",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.run-current-test-file",
+        "title": "TSC: Run tests",
+        "category": "TSC"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.36.0",
+    "glob": "^7.1.4",
+    "mocha": "^6.1.4",
+    "typescript": "^3.3.1",
+    "tslint": "^5.12.1",
+    "vscode-test": "^1.0.0-next.0"
+  }
+}
