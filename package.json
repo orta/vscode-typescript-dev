@@ -1,11 +1,11 @@
 {
   "name": "vscode-typescript-dev",
   "displayName": "TSC Dev",
-  "description": "An extension for working in the TypeScript codebasegh",
+  "description": "An extension for working in the TypeScript codebase",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/orta/vscode-typescript-dev"
   },
   "publisher": "Orta",
   "engines": {
