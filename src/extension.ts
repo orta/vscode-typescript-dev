@@ -1,13 +1,20 @@
 import * as vscode from "vscode"
 import { basename } from "path"
+import { findFreePort } from "./lib/findFreePort"
 
 export function activate(context: vscode.ExtensionContext) {
   const funcs = handleTestFiles()
-  let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.declare-current-test-file", funcs.set)
-  context.subscriptions.push(disposable)
+  context.subscriptions.push(
+    vscode.commands.registerCommand("io.orta.typescript-dev.declare-current-test-file", funcs.set)
+  )
 
-  let disposable2 = vscode.commands.registerCommand("io.orta.typescript-dev.run-current-test-file", funcs.run)
-  context.subscriptions.push(disposable2)
+  context.subscriptions.push(
+    vscode.commands.registerCommand("io.orta.typescript-dev.run-current-test-file", funcs.run)
+  )
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("io.orta.typescript-dev.restart-with-debugging", restartWithDebuggingEnabled)
+  )
 
   // https://code.visualstudio.com/api/extension-guides/task-provider
   vscode.tasks.registerTaskProvider("tsc-dev", {
@@ -106,5 +113,10 @@ const handleTestFiles = () => {
   }
 }
 
+async function restartWithDebuggingEnabled() {
+  process.env.TSS_DEBUG = String(await findFreePort(9229, 1000, 1000));
+  return vscode.commands.executeCommand("typescript.restartTsServer");
+}
+
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

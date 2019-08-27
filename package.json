@@ -15,22 +15,44 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:**/src/compiler/checker.ts"
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "io.orta.typescript-dev.declare-current-test-file",
-        "title": "TSC: Declare current test file",
+        "title": "Declare current test file",
         "category": "TSC"
       },
       {
         "command": "io.orta.typescript-dev.run-current-test-file",
-        "title": "TSC: Run tests",
+        "title": "Run tests",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.restart-with-debugging",
+        "title": "Restart TS Server with debugging enabled",
         "category": "TSC"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "io.orta.typescript-dev.declare-current-test-file",
+          "when": "workspaceContains:**/src/compiler/checker.ts"
+        },
+        {
+          "command": "io.orta.typescript-dev.run-current-test-file",
+          "when": "workspaceContains:**/src/compiler/checker.ts"
+        },
+        {
+          "command": "io.orta.typescript-dev.restart-with-debugging",
+          "when": "editorLangId =~ /^typescript/"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
