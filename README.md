@@ -1,6 +1,6 @@
 # VS Code TypeScript Dev
 
-An extension for working in the TypeScript codebase.
+[An extension for working in the TypeScript codebase.](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-typescript-dev&ssr=false#review-details)
 
 ## Features
 
