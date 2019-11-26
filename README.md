@@ -4,7 +4,14 @@ An extension for working in the TypeScript codebase.
 
 ## Features
 
-It's not too smart yet, but it lets you choose a test file and re-run that file easily from anywhere in your editor.
+It's not too smart yet, but:
+
+- it lets you choose a test file and re-run that file easily from anywhere in your editor.
+- It adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
+
+  - Symbol files ![](./screenshots/symbols.png)
+
+  - Type Files ![](./screenshots/types.png)
 
 ### For more information
 

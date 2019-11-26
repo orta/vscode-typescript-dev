@@ -2,7 +2,7 @@
   "name": "vscode-typescript-dev",
   "displayName": "TSC Dev",
   "description": "An extension for working in the TypeScript codebase",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/orta/vscode-typescript-dev"
@@ -19,6 +19,32 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "ts-symbols",
+        "extensions": [
+          ".symbols"
+        ]
+      },
+      {
+        "id": "ts-types",
+        "extensions": [
+          ".types"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ts-symbols",
+        "scopeName": "source.ts-symbols",
+        "path": "./syntaxes/ts-symbols.tmLanguage.plist"
+      },
+      {
+        "language": "ts-types",
+        "scopeName": "source.ts-types",
+        "path": "./syntaxes/ts-types.tmLanguage.plist"
+      }
+    ],
     "commands": [
       {
         "command": "io.orta.typescript-dev.declare-current-test-file",
