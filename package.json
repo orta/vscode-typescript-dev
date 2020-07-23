@@ -19,6 +19,14 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "tsBaselines",
+          "name": "Changed Baselines"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "ts-symbols",

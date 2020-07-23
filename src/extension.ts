@@ -1,7 +1,17 @@
 import * as vscode from "vscode"
 import { basename } from "path"
+import { BaselinesProvider } from "./baselines"
+import { showBaselineDiff } from "./showBaselineDiff"
 
 export function activate(context: vscode.ExtensionContext) {
+  if (vscode.workspace.workspaceFolders) {
+    const baselinesProvider = new BaselinesProvider(vscode.workspace.workspaceFolders[0].uri, context)
+    vscode.window.registerTreeDataProvider("tsBaselines", baselinesProvider)
+
+    let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.show-baseline-diff", showBaselineDiff)
+    context.subscriptions.push(disposable)
+  }
+
   const funcs = handleTestFiles()
   let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.declare-current-test-file", funcs.set)
   context.subscriptions.push(disposable)
