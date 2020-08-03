@@ -6,8 +6,9 @@
 
 It's not too smart yet, but:
 
-- it lets you choose a test file and re-run that file easily from anywhere in your editor.
+- It lets you choose a test file and re-run that file easily from anywhere in your editor.
 - It adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
+- It adds a command and an optional status bar indicator for the selection’s zero-based position in the current file
 
   - Symbol files ![](./screenshots/symbols.png)
 

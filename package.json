@@ -15,7 +15,7 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:**/src/compiler/checker.ts"
+    "workspaceContains:**/*.{ts,js,tsx,jsx}"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -48,15 +48,45 @@
     "commands": [
       {
         "command": "io.orta.typescript-dev.declare-current-test-file",
-        "title": "TSC: Declare current test file",
+        "title": "Declare current test file",
         "category": "TSC"
       },
       {
         "command": "io.orta.typescript-dev.run-current-test-file",
-        "title": "TSC: Run tests",
+        "title": "Run tests",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.go-to-position",
+        "title": "Go to position",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.toggle-position",
+        "title": "Toggle position indicator in status bar",
         "category": "TSC"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "io.orta.typescript-dev.declare-current-test-file",
+          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
+        },
+        {
+          "command": "io.orta.typescript-dev.run-current-test-file",
+          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
+        },
+        {
+          "command": "io.orta.typescript-dev.go-to-position",
+          "when": "editorFocus"
+        },
+        {
+          "command": "io.orta.typescript-dev.toggle-position",
+          "when": "editorFocus"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
@@ -72,8 +102,8 @@
     "@types/vscode": "^1.36.0",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
-    "typescript": "^3.3.1",
     "tslint": "^5.12.1",
+    "typescript": "^4.0.0-dev.20200803",
     "vscode-test": "^1.0.0-next.0"
   }
 }

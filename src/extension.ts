@@ -1,5 +1,7 @@
 import * as vscode from "vscode"
 import { basename } from "path"
+import { activatePosition } from "./position"
+import { setTypeScriptCodeBaseContext } from "./context"
 
 export function activate(context: vscode.ExtensionContext) {
   const funcs = handleTestFiles()
@@ -8,6 +10,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   let disposable2 = vscode.commands.registerCommand("io.orta.typescript-dev.run-current-test-file", funcs.run)
   context.subscriptions.push(disposable2)
+
+  context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(setTypeScriptCodeBaseContext));
+  setTypeScriptCodeBaseContext();
+  activatePosition(context)
 
   // https://code.visualstudio.com/api/extension-guides/task-provider
   vscode.tasks.registerTaskProvider("tsc-dev", {
@@ -107,4 +113,4 @@ const handleTestFiles = () => {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
