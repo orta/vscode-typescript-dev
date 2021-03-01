@@ -2,6 +2,7 @@ import * as vscode from "vscode"
 import { basename } from "path"
 import { activatePosition } from "./position"
 import { setTypeScriptCodeBaseContext } from "./context"
+import { twoslashCompetions } from "./twoslashCompletion"
 
 export function activate(context: vscode.ExtensionContext) {
   const funcs = handleTestFiles()
@@ -11,12 +12,12 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable2 = vscode.commands.registerCommand("io.orta.typescript-dev.run-current-test-file", funcs.run)
   context.subscriptions.push(disposable2)
 
-  context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(setTypeScriptCodeBaseContext));
-  setTypeScriptCodeBaseContext();
+  context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(setTypeScriptCodeBaseContext))
+  setTypeScriptCodeBaseContext()
   activatePosition(context)
 
   // https://code.visualstudio.com/api/extension-guides/task-provider
-  vscode.tasks.registerTaskProvider("tsc-dev", {
+  const tasks = vscode.tasks.registerTaskProvider("tsc-dev", {
     provideTasks: async () => {
       return [
         new vscode.Task(
@@ -39,6 +40,44 @@ export function activate(context: vscode.ExtensionContext) {
     // NOOP because we provide all the tasks
     resolveTask: async () => undefined,
   })
+
+  // Provides a hover with the full info for exceptions
+  const completionDispose = vscode.languages.registerCompletionItemProvider(
+    "typescript",
+    twoslashCompetions,
+    // prettier-ignore
+    ".",
+    "@",
+    "/",
+    "-",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+  )
+  context.subscriptions.push(completionDispose, tasks)
 }
 
 const handleTestFiles = () => {
@@ -113,4 +152,4 @@ const handleTestFiles = () => {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
