@@ -13,21 +13,21 @@ export const twoslashCompetions: vscode.CompletionItemProvider = {
     const thisLine = document.getText(range)
     // Not a comment
     if (!thisLine.startsWith("//")) {
-      return { items: [] }
+      return
     }
 
     const words = thisLine.replace("\t", "").split(" ")
 
     // Not the right amount of
     if (words.length !== 2) {
-      return { items: [] }
+      return
     }
 
     const word = words[1]
 
     // Not a @ at the first word
     if (!word.startsWith("@")) {
-      return { items: [] }
+      return
     }
 
     const workspace = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri)
@@ -40,7 +40,7 @@ export const twoslashCompetions: vscode.CompletionItemProvider = {
         `TSC Dev Ext: Could not find a copy of TypeScript at ${workspaceRoot + "/node_modules/typescript"}`
       )
       console.error("Could not find local copy of TS")
-      return { items: [] }
+      return
     }
 
     // @ts-ignore - ts.optionDeclarations is private
@@ -59,8 +59,9 @@ export const twoslashCompetions: vscode.CompletionItemProvider = {
       }
     })
 
-    return {
-      items: results,
-    }
+    if (results.length)
+      return {
+        items: results,
+      }
   },
 }
