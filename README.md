@@ -6,16 +6,17 @@
 
 It's not too smart yet, but:
 
-- it lets you choose a test file and re-run that file easily from anywhere in your editor.
-- It adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
+### Syntax Highlighting for Test Files
 
-  - Symbol files ![](./screenshots/symbols.png)
+- Symbol files ![](./screenshots/symbols.png)
+- Type Files ![](./screenshots/types.png)
 
-  - Type Files ![](./screenshots/types.png)
+### Changed Baselines Info
 
-### For more information
+Shows up to 100 changed baselines with:
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+ - Jump to local/reference
+ - Show diff
+ - Jump to test (most of the time)
 
-**Enjoy!**
+Has a button for `gulp diff`.

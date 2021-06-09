@@ -1,5 +1,4 @@
 import { join, parse, sep } from "path";
-import * as os from "os";
 import * as fs from "fs";
 
 export const baselineToTester = (config: { tscRoot: string }) => {
@@ -75,18 +74,19 @@ export const baselineToTester = (config: { tscRoot: string }) => {
       }
     }
 
-    // Known pattern lookups like the tsbuild one
+    // Known pattern lookups:
 
     // With tsbuild files, the names are pretty auto-generated
     if (components[4] === "tsbuild") {
       const tsBuildTests = join(config.tscRoot, "src", "testRunner", "unittests", "tsbuild");
       const filesInDirectory = fs.readdirSync(tsBuildTests);
-      // Look through all the tsbuild test files
-      const scenario = `subscenario: "${name.replace(/-/g, " ")}",`;
-      console.log(scenario);
+
+      // Look through all the tsbuild test files, looking for a sub-scenario with the same name as the file
+      const scenario = `subscenario: "${name.replace(/-/g, " ")}"`.toLowerCase();
+
       for (const f of filesInDirectory) {
         const filepath = join(tsBuildTests, f);
-        const content = fs.readFileSync(filepath, "utf8").toLowerCase().replace(/-/g, " ");
+        const content = fs.readFileSync(filepath, "utf8").toLowerCase();
 
         if (content.includes(scenario)) {
           const line = getLineForResultInString(scenario, content);

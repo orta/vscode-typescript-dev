@@ -66,11 +66,12 @@ export class BaselinesProvider implements vscode.TreeDataProvider<TreeNode> {
 
     treeItem.command = {
       command: "vscode.open",
-      title: `Open new file`,
+      title: `Open changed file`,
       arguments: [node.uri],
     };
 
-    treeItem.contextValue = "edited"
+    treeItem.contextValue = "edited";
+    treeItem.resourceUri = node.uri;
     return treeItem;
   }
 }

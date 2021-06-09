@@ -71,6 +71,27 @@
           "command": "tsDev.openReferenceShort",
           "when": "view == tsDev.baselines && viewItem == edited",
           "group": "inline"
+        },
+        {
+          "command": "tsDev.openDiffShort",
+          "when": "view == tsDev.baselines && viewItem == edited",
+          "group": "inline"
+        },
+        {
+          "command": "tsDev.openTestShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.openReferenceShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.openDiffShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.copyPath",
+          "when": "view == tsDev.baselines && viewItem == edited"
         }
       ]
     },
@@ -78,7 +99,7 @@
       {
         "command": "tsDev.openDiffTool",
         "title": "Difftool",
-        "shortTitle": "Difftool"
+        "shortTitle": "Gulp Diff"
       },
       {
         "command": "tsDev.openTestShort",
@@ -87,6 +108,14 @@
       {
         "command": "tsDev.openReferenceShort",
         "title": "Ref"
+      },
+      {
+        "command": "tsDev.openDiffShort",
+        "title": "Diff"
+      },
+      {
+        "command": "tsDev.copyPath",
+        "title": "Copy Path"
       }
     ]
   },
