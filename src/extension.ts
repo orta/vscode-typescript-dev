@@ -1,120 +1,36 @@
-import * as vscode from "vscode"
-import { basename } from "path"
-import { BaselinesProvider } from "./baselines"
-import { showBaselineDiff } from "./showBaselineDiff"
+import * as vscode from "vscode";
+import { BaselinesProvider, TreeNode } from "./baselines";
+import { showBaselineDiff } from "./showBaselineDiff";
+import { createBaselineFinder } from "./baselineFinder";
+import { baselineToTester } from "./baselineToTest";
 
 export function activate(context: vscode.ExtensionContext) {
-  if (vscode.workspace.workspaceFolders) {
-    const baselinesProvider = new BaselinesProvider(vscode.workspace.workspaceFolders[0].uri, context)
-    vscode.window.registerTreeDataProvider("tsBaselines", baselinesProvider)
+  const workspace = vscode.workspace.workspaceFolders![0];
+  const watcher = createBaselineFinder(workspace.uri.fsPath);
+  watcher.startTimer();
 
-    let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.show-baseline-diff", showBaselineDiff)
-    context.subscriptions.push(disposable)
-  }
+  const baselinesProvider = new BaselinesProvider(watcher.resultsEmitter);
+  vscode.window.registerTreeDataProvider("tsDev.baselines", baselinesProvider);
 
-  const funcs = handleTestFiles()
-  let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.declare-current-test-file", funcs.set)
-  context.subscriptions.push(disposable)
+  let disposable = vscode.commands.registerCommand("io.orta.typescript-dev.show-baseline-diff", showBaselineDiff);
+  context.subscriptions.push(disposable);
 
-  let disposable2 = vscode.commands.registerCommand("io.orta.typescript-dev.run-current-test-file", funcs.run)
-  context.subscriptions.push(disposable2)
+  let cmd1 = vscode.commands.registerCommand("tsDev.openReferenceShort", (item: TreeNode) => {
+    vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(item.uri.fsPath.replace("local", "reference")));
+  });
 
-  // https://code.visualstudio.com/api/extension-guides/task-provider
-  vscode.tasks.registerTaskProvider("tsc-dev", {
-    provideTasks: async () => {
-      return [
-        new vscode.Task(
-          { type: "shell", task: "pre-compile-all" },
-          "pre-compile-all",
-          "tsc-dev",
-          new vscode.ShellExecution("gulp tests"),
-          "$gulp-tsc"
-        ),
-        new vscode.Task(
-          { type: "shell", task: "pre-compile-tests" },
-          "pre-compile-tests",
-          "tsc-dev",
-          new vscode.ShellExecution("gulp tests --built"),
-          "$gulp-tsc"
-        ),
-      ]
-    },
+  const getTest = baselineToTester({ tscRoot: workspace.uri.fsPath });
 
-    // NOOP because we provide all the tasks
-    resolveTask: async () => undefined,
-  })
+  let cmd2 = vscode.commands.registerCommand("tsDev.openTestShort", (item: TreeNode) => {
+    const testFile = getTest(item.uri.fsPath);
+    if (!testFile) {
+      vscode.window.showErrorMessage(`Could not find a test file for ${item.uri.fsPath}`);
+    } else {
+      // const [path, number] = testFile.split(":")[0];
+      // const meta: vscode.TextDocumentShowOptions = ;
+      // const d = vscode.window.showTextDocument();
+      vscode.commands.executeCommand("vscode.open", "file:/" + vscode.Uri.parse(testFile));
+    }
+  });
+  context.subscriptions.push(cmd2);
 }
-
-const handleTestFiles = () => {
-  let activeTestFileURI: vscode.Uri | undefined
-  let hasChangedSrcFolder = true
-
-  const prettyName = (uri: vscode.Uri) => basename(uri.path)
-
-  return {
-    onSave: (e: vscode.TextDocument) => {
-      if (e.uri.path.includes("/src/")) {
-        hasChangedSrcFolder = true
-        console.log("CHANGED SRC")
-      }
-    },
-
-    set: () => {
-      const currentEditor = vscode.window.activeTextEditor
-      if (!currentEditor) {
-        vscode.window.showInformationMessage("You aren't looking at a file for tests")
-        return
-      }
-
-      activeTestFileURI = currentEditor.document.uri
-      vscode.window.showInformationMessage(`Set the current test file to: ${prettyName(activeTestFileURI)}`)
-    },
-
-    run: () => {
-      if (!activeTestFileURI) {
-        vscode.window.showInformationMessage("You haven't set an active test file yet")
-        return
-      }
-
-      const workspace = vscode.workspace.workspaceFolders
-      if (!workspace) {
-        vscode.window.showInformationMessage("Somehow you're not in a workspace")
-        return
-      }
-
-      // Reset the changed src check
-      hasChangedSrcFolder = false
-
-      vscode.window.showInformationMessage(`Running tests for ${prettyName(activeTestFileURI)}`)
-      const runTask: vscode.DebugConfiguration = {
-        type: "node",
-        request: "launch",
-        name: "Test run for TSC",
-        program: "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-        args: [
-          "-u",
-          "bdd",
-          "--timeout",
-          "2000000",
-          "--colors",
-          "built/local/run.js",
-          "-f",
-          `${activeTestFileURI.path}`,
-        ],
-        env: {
-          NODE_ENV: "testing",
-        },
-        //"stopOnEntry": true,
-        sourceMaps: true,
-        console: "integratedTerminal",
-        preLaunchTask: hasChangedSrcFolder ? "tsc-dev: pre-compile-all" : "tsc-dev: pre-compile-tests",
-        outFiles: ["${workspaceRoot}/built/local/run.js"],
-      }
-
-      vscode.debug.startDebugging(workspace[0], runTask)
-    },
-  }
-}
-
-// this method is called when your extension is deactivated
-export function deactivate() {}

@@ -31,3 +31,24 @@ it("handles multi-arg files ", () => {
 
 // tests/baselines/reference/exportAndImport-es3-amd.js
 // -> tests/cases/conformance/es6/modules/exportAndImport-es3.ts
+
+describe("edge cases", () => {
+  it("tsbuild", () => {
+    const root = join(__dirname, "..", "..", "typescript-compiler");
+    const baseLineToTest = baselineToTester({ tscRoot: root });
+
+    const tests = [
+      [
+        "/tests/baselines/local/tsbuild/outfile-concat/incremental-headers-change-without-dts-changes/multiple-prologues-in-all-projects.js",
+        "/src/testRunner/unittests/tsbuild/amdModulesWithOut.ts:85",
+      ],
+      // [
+      //   "/tests/baselines/local/tsbuild/outfile-concat/incremental-headers-change-without-dts-changes/stripInternal-with-comments-emit-enabled-when-one-two-three-are-prepended-in-order.js",
+      //   "/src/testRunner/unittests/tsbuild/amdModulesWithOut.ts:85",
+      // ],
+    ];
+    for (const test of tests) {
+      expect(baseLineToTest(root + test[0])).toEqual(root + test[1]);
+    }
+  });
+});

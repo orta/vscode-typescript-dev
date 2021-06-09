@@ -1,133 +1,76 @@
-import * as vscode from "vscode"
-import * as fs from "fs"
-import * as path from "path"
+import * as vscode from "vscode";
+import * as path from "path";
 
-export class BaselinesProvider implements vscode.TreeDataProvider<BaselineFile> {
-  private _onDidChangeTreeData: vscode.EventEmitter<BaselineFile | undefined> = new vscode.EventEmitter<
-    BaselineFile | undefined
-  >()
-  readonly onDidChangeTreeData: vscode.Event<BaselineFile | undefined> = this._onDidChangeTreeData.event
+import { Runner } from "./baselineFinder";
 
-  // private watcher: vscode.FileSystemWatcher
-  private changedFiles: vscode.Uri[] = []
-  private watcherDisposables: vscode.Disposable[] = []
+export type TreeNode = {
+  uri: vscode.Uri;
+  type: "edited" | "deleted" | "added";
+  display: string;
+  open: boolean;
+};
 
-  constructor(private workspaceRoot: vscode.Uri, context: vscode.ExtensionContext) {
-    // TODO: how to dispose?
-    // const local = new vscode.RelativePattern(workspaceRoot.toString(), "tests/baselines/local/**/*")
-    // console.log("looking at", local)
-    // const watcher = vscode.workspace.createFileSystemWatcher("tests/**/*")
-    // watcher.onDidChange((uri) => console.log("change: " + uri.toString()))
-    // watcher.onDidCreate((uri) => console.log("create: " + uri.toString()))
-    // watcher.onDidDelete((uri) => console.log("delete: " + uri.toString()))
-    // this.watcherDisposables.push(changeD, createdD)
-    // context.subscriptions.push(watcher)
+export class BaselinesProvider implements vscode.TreeDataProvider<TreeNode> {
+  private _onDidChangeTreeData: vscode.EventEmitter<TreeNode | null> = new vscode.EventEmitter<TreeNode | null>();
+  readonly onDidChangeTreeData: vscode.Event<TreeNode | null> = this._onDidChangeTreeData.event;
+  private root: vscode.Uri[] = [];
+
+  constructor(runEventEmitter: Runner["resultsEmitter"]) {
+    runEventEmitter.event((e) => {
+      console.log("got", e);
+      this.root = e;
+      this._onDidChangeTreeData.fire(null);
+    });
   }
 
-  refresh(): void {
-    this._onDidChangeTreeData.fire()
+  urlToBaseLineNode(uri: vscode.Uri): TreeNode {
+    return {
+      uri: uri,
+      type: "edited",
+      display: path.basename(uri.fsPath),
+      open: false,
+    };
   }
 
-  getTreeItem(element: BaselineFile): vscode.TreeItem {
-    return element
-  }
-
-  async getChildren(element?: BaselineFile): Promise<BaselineFile[]> {
-    if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage("No dependency in empty workspace")
-      return Promise.resolve([])
-    }
-    const files = await vscode.workspace.findFiles("tests/baselines/local/*")
-
-    return files.map((f) => {
-      const cmd = {
-        command: "io.orta.typescript-dev.show-baseline-diff",
-        title: "",
-        arguments: [f],
+  getChildren(node: TreeNode): Thenable<TreeNode[]> {
+    if (!node) {
+      if (this.root) {
+        return Promise.resolve(this.root.map(this.urlToBaseLineNode));
+      } else {
+        return Promise.resolve([]);
       }
-      return new BaselineFile(path.basename(f.path), "1", vscode.TreeItemCollapsibleState.None, cmd)
-    })
-
-    // if (element) {
-    //   return Promise.resolve(
-    //     this.getDepsInPackageJson(path.join(this.workspaceRoot, "node_modules", element.label, "package.json"))
-    //   )
-    // } else {
-    //   const packageJsonPath = path.join(this.workspaceRoot, "package.json")
-    //   if (this.pathExists(packageJsonPath)) {
-    //     return Promise.resolve(this.getDepsInPackageJson(packageJsonPath))
-    //   } else {
-    //     vscode.window.showInformationMessage("Workspace has no package.json")
-    //     return Promise.resolve([])
-    //   }
-    // }
-  }
-
-  /**
-   * Given the path to package.json, read all its dependencies and devDependencies.
-   */
-  private getDepsInPackageJson(packageJsonPath: string): BaselineFile[] {
-    // if (this.pathExists(packageJsonPath)) {
-    //   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"))
-    //   const toDep = (moduleName: string, version: string): Dependency => {
-    //     if (this.pathExists(path.join(this.workspaceRoot, "node_modules", moduleName))) {
-    //       return new Dependency(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed)
-    //     } else {
-    //       return new Dependency(moduleName, version, vscode.TreeItemCollapsibleState.None, {
-    //         command: "extension.openPackageOnNpm",
-    //         title: "",
-    //         arguments: [moduleName],
-    //       })
-    //     }
-    //   }
-    //   const deps = packageJson.dependencies
-    //     ? Object.keys(packageJson.dependencies).map((dep) => toDep(dep, packageJson.dependencies[dep]))
-    //     : []
-    //   const devDeps = packageJson.devDependencies
-    //     ? Object.keys(packageJson.devDependencies).map((dep) => toDep(dep, packageJson.devDependencies[dep]))
-    //     : []
-    //   return deps.concat(devDeps)
-    // } else {
-    //   return []
-    // }
-    return []
-  }
-
-  private pathExists(p: string): boolean {
-    try {
-      fs.accessSync(p)
-    } catch (err) {
-      return false
+    } else {
+      return Promise.resolve([]);
     }
-
-    return true
-  }
-}
-
-export class BaselineFile extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    private version: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(label, collapsibleState)
   }
 
-  // @ts-ignore
-  get tooltip(): string {
-    return `${this.label}-${this.version}`
-  }
+  getTreeItem(node: TreeNode): vscode.TreeItem {
+    // if (Array.isArray(node)) {
+    //   const collapsed = vscode.TreeItemCollapsibleState.Expanded;
+    //   const treeItem: vscode.TreeItem = new vscode.TreeItem("Project", collapsed);
+    //   return treeItem;
+    // }
 
-  // @ts-ignore
-  get description(): string {
-    return this.version
-  }
+    const hasChildren = false; // node.children.length;
+    const collapsed = false
+      ? true
+        ? vscode.TreeItemCollapsibleState.Expanded
+        : vscode.TreeItemCollapsibleState.Collapsed
+      : vscode.TreeItemCollapsibleState.None;
+    const treeItem: vscode.TreeItem = new vscode.TreeItem(node.display, collapsed);
+    // treeItem.description = node.time;
 
-  iconPath = {
-    light: path.join(__filename, "..", "..", "resources", "light", "dependency.svg"),
-    dark: path.join(__filename, "..", "..", "resources", "dark", "dependency.svg"),
-  }
+    // if (node.start) {
+    //   const fileUri = vscode.Uri.parse("file://" + node.start.file);
+    //   treeItem.resourceUri = fileUri;
 
-  contextValue = "dependency"
+    treeItem.command = {
+      command: "vscode.open",
+      title: `Open new file`,
+      arguments: [node.uri],
+    };
+
+    treeItem.contextValue = "edited"
+    return treeItem;
+  }
 }

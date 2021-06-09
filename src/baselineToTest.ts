@@ -1,4 +1,5 @@
-import { join, parse } from "path";
+import { join, parse, sep } from "path";
+import * as os from "os";
 import * as fs from "fs";
 
 export const baselineToTester = (config: { tscRoot: string }) => {
@@ -10,8 +11,11 @@ export const baselineToTester = (config: { tscRoot: string }) => {
   const casesDir = join(config.tscRoot, "tests", "cases");
   let folders: string[] = [];
 
-  return (path: string) => {
-    const parsed = parse(path);
+  return (_path: string) => {
+    // Always relative paths in here
+    const input = _path.includes(config.tscRoot) ? _path.replace(config.tscRoot, "") : _path;
+
+    const parsed = parse(input);
     const name = parsed.name;
     const dir = parsed.dir;
     const nameTS = name + ".ts";
@@ -35,6 +39,8 @@ export const baselineToTester = (config: { tscRoot: string }) => {
       const res = checkDir(sourceDir);
       if (res) return res;
     }
+
+    const components = input.split(sep);
 
     // Fastish lookup via a .symbols file
     const symbolsPath = join(config.tscRoot, dir, name + ".symbols");
@@ -69,6 +75,28 @@ export const baselineToTester = (config: { tscRoot: string }) => {
       }
     }
 
+    // Known pattern lookups like the tsbuild one
+
+    // With tsbuild files, the names are pretty auto-generated
+    if (components[4] === "tsbuild") {
+      const tsBuildTests = join(config.tscRoot, "src", "testRunner", "unittests", "tsbuild");
+      const filesInDirectory = fs.readdirSync(tsBuildTests);
+      // Look through all the tsbuild test files
+      const scenario = `subscenario: "${name.replace(/-/g, " ")}",`;
+      console.log(scenario);
+      for (const f of filesInDirectory) {
+        const filepath = join(tsBuildTests, f);
+        const content = fs.readFileSync(filepath, "utf8").toLowerCase().replace(/-/g, " ");
+
+        if (content.includes(scenario)) {
+          const line = getLineForResultInString(scenario, content);
+          const result = line !== -1 ? `${filepath}:${line}` : filepath;
+          resultsCache.set(withoutExt, result);
+          return result;
+        }
+      }
+    }
+
     // Very slow lookup of all dirs, first get all dirs in the compiler test folder
     if (folders.length === 0) folders = getAllDirectories(casesDir);
     for (const folder of folders) {
@@ -94,4 +122,14 @@ const getAllDirectories = (source: string) => {
   };
   getFilesRecursively(source);
   return files;
+};
+
+const getLineForResultInString = (query: string, file: string) => {
+  const lines = file.split(/\r?\n/);
+  for (const line of lines) {
+    if (line.includes(query)) {
+      return lines.indexOf(line);
+    }
+  }
+  return -1;
 };
