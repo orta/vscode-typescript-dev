@@ -1,8 +1,8 @@
 {
   "name": "vscode-typescript-dev",
   "displayName": "TSC Dev",
-  "description": "An extension for working in the TypeScript codebase",
-  "version": "0.0.5",
+  "description": "An extension only for working in the TypeScript compiler codebase",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/orta/vscode-typescript-dev"
@@ -17,8 +17,16 @@
   "activationEvents": [
     "workspaceContains:**/*.{ts,js,tsx,jsx}"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/main.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "tsDev.baselines",
+          "name": "Changed Baselines"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "ts-symbols",
@@ -45,29 +53,47 @@
         "path": "./syntaxes/ts-types.tmLanguage.plist"
       }
     ],
-    "commands": [
-      {
-        "command": "io.orta.typescript-dev.declare-current-test-file",
-        "title": "Declare current test file",
-        "category": "TSC"
-      },
-      {
-        "command": "io.orta.typescript-dev.run-current-test-file",
-        "title": "Run tests",
-        "category": "TSC"
-      },
-      {
-        "command": "io.orta.typescript-dev.go-to-position",
-        "title": "Go to position",
-        "category": "TSC"
-      },
-      {
-        "command": "io.orta.typescript-dev.toggle-position",
-        "title": "Toggle position indicator in status bar",
-        "category": "TSC"
-      }
-    ],
     "menus": {
+      "view/title": [
+        {
+          "command": "tsDev.openDiffTool",
+          "when": "view == tsDev.baselines",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "tsDev.openTestShort",
+          "when": "view == tsDev.baselines && viewItem == edited",
+          "group": "inline"
+        },
+        {
+          "command": "tsDev.openReferenceShort",
+          "when": "view == tsDev.baselines && viewItem == edited",
+          "group": "inline"
+        },
+        {
+          "command": "tsDev.openDiffShort",
+          "when": "view == tsDev.baselines && viewItem == edited",
+          "group": "inline"
+        },
+        {
+          "command": "tsDev.openTestShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.openReferenceShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.openDiffShort",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        },
+        {
+          "command": "tsDev.copyPath",
+          "when": "view == tsDev.baselines && viewItem == edited"
+        }
+      ],
       "commandPalette": [
         {
           "command": "io.orta.typescript-dev.declare-current-test-file",
@@ -86,24 +112,64 @@
           "when": "editorFocus"
         }
       ]
-    }
+    },
+    "commands": [
+      {
+        "command": "tsDev.openDiffTool",
+        "title": "Difftool",
+        "shortTitle": "Gulp Diff"
+      },
+      {
+        "command": "tsDev.openTestShort",
+        "title": "Test"
+      },
+      {
+        "command": "tsDev.openReferenceShort",
+        "title": "Ref"
+      },
+      {
+        "command": "tsDev.openDiffShort",
+        "title": "Diff"
+      },
+      {
+        "command": "tsDev.copyPath",
+        "title": "Copy Path"
+      },
+      {
+        "command": "io.orta.typescript-dev.go-to-position",
+        "title": "Go to position",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.toggle-position",
+        "title": "Toggle position indicator in status bar",
+        "category": "TSC"
+      }
+    ]
   },
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
+    "vscode:prepublish": "yarn esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "build": "yarn esbuild-base --sourcemap",
+    "watch": "yarn esbuild-base --watch",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile",
-    "test": "node ./out/test/runTest.js"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
-    "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.36.0",
     "glob": "^7.1.4",
-    "mocha": "^6.1.4",
     "tslint": "^5.12.1",
-    "typescript": "^4.0.0-dev.20200803",
-    "vscode-test": "^1.0.0-next.0"
+    "typescript": "^4.3.2",
+    "@types/jest": "^26.0.23",
+    "esbuild": "^0.12.5",
+    "esbuild-jest": "^0.5.0",
+    "jest": "^27.0.3"
+  },
+  "dependencies": {},
+  "prettier": {
+    "printWidth": 140
   }
 }

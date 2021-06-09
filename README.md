@@ -4,19 +4,25 @@
 
 ## Features
 
-It's not too smart yet, but:
+### Test File Stuff
 
-- It lets you choose a test file and re-run that file easily from anywhere in your editor.
-- It adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
-- It adds a command and an optional status bar indicator for the selection’s zero-based position in the current file
+- Get the character index of your cursor in a fourslash test
+- Get auto-complete for twoslash compiler flags
 
-  - Symbol files ![](./screenshots/symbols.png)
+### Syntax Highlighting for Test Files
 
-  - Type Files ![](./screenshots/types.png)
+Adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
+- Symbol files ![](./screenshots/symbols.png)
+- Type Files ![](./screenshots/types.png)
 
-### For more information
+### Changed Baselines Info
 
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+![](./screenshots/baselines.png)
 
-**Enjoy!**
+Shows up to 100 changed baselines with:
+
+ - Jump to local/reference
+ - Show diff
+ - Jump to test (most of the time)
+
+Has a button for `gulp diff`.
