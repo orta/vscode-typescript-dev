@@ -4,10 +4,14 @@
 
 ## Features
 
-It's not too smart yet, but:
+### Test File Stuff
+
+- Get the character index of your cursor in a fourslash test
+- Get auto-complete for twoslash compiler flags
 
 ### Syntax Highlighting for Test Files
 
+Adds syntax highlighting for .types and .symbol files in a way which won't fill your screen with errors.
 - Symbol files ![](./screenshots/symbols.png)
 - Type Files ![](./screenshots/types.png)
 

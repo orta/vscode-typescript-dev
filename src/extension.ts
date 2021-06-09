@@ -1,11 +1,25 @@
 import * as vscode from "vscode";
+import { basename } from "path";
 import { BaselinesProvider, TreeNode } from "./baselines";
 import { createBaselineFinder } from "./baselineFinder";
 import { baselineToTester } from "./baselineToTest";
 
 // https://code.visualstudio.com/api/references/commands
 
+import { activatePosition } from "./position";
+import { setTypeScriptCodeBaseContext } from "./context";
+import { startupTwoslash } from "./twoslashCompletion";
+
 export function activate(context: vscode.ExtensionContext) {
+  context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(setTypeScriptCodeBaseContext));
+  setTypeScriptCodeBaseContext();
+  activatePosition(context);
+
+  // Provides a hover with the full info for exceptions
+  const completionDispose = startupTwoslash();
+  context.subscriptions.push(completionDispose);
+
+  // export function activate(context: vscode.ExtensionContext) {
   const workspace = vscode.workspace.workspaceFolders![0];
   const watcher = createBaselineFinder(workspace.uri.fsPath);
   watcher.startTimer();
@@ -15,9 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const getTest = baselineToTester({ tscRoot: workspace.uri.fsPath });
 
-  const diffTool = vscode.commands.registerCommand("tsDev.openDiffTool", () => {
-    require("child_process").exec("gulp diff");
-  });
+  const diffTool = vscode.commands.registerCommand("tsDev.openDiffTool", () => require("child_process").exec("gulp diff"));
 
   const open = vscode.commands.registerCommand("tsDev.openReferenceShort", (item: TreeNode) => {
     vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(item.uri.fsPath.replace("local", "reference")));

@@ -17,8 +17,7 @@ export class BaselinesProvider implements vscode.TreeDataProvider<TreeNode> {
 
   constructor(runEventEmitter: Runner["resultsEmitter"]) {
     runEventEmitter.event((e) => {
-      console.log("got", e);
-      this.root = e;
+      this.root = e.sort();
       this._onDidChangeTreeData.fire(null);
     });
   }
@@ -45,24 +44,14 @@ export class BaselinesProvider implements vscode.TreeDataProvider<TreeNode> {
   }
 
   getTreeItem(node: TreeNode): vscode.TreeItem {
-    // if (Array.isArray(node)) {
-    //   const collapsed = vscode.TreeItemCollapsibleState.Expanded;
-    //   const treeItem: vscode.TreeItem = new vscode.TreeItem("Project", collapsed);
-    //   return treeItem;
-    // }
-
     const hasChildren = false; // node.children.length;
     const collapsed = false
       ? true
         ? vscode.TreeItemCollapsibleState.Expanded
         : vscode.TreeItemCollapsibleState.Collapsed
       : vscode.TreeItemCollapsibleState.None;
-    const treeItem: vscode.TreeItem = new vscode.TreeItem(node.display, collapsed);
-    // treeItem.description = node.time;
 
-    // if (node.start) {
-    //   const fileUri = vscode.Uri.parse("file://" + node.start.file);
-    //   treeItem.resourceUri = fileUri;
+    const treeItem: vscode.TreeItem = new vscode.TreeItem(node.display, collapsed);
 
     treeItem.command = {
       command: "vscode.open",

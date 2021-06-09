@@ -15,7 +15,7 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:**/src/compiler/checker.ts"
+    "workspaceContains:**/*.{ts,js,tsx,jsx}"
   ],
   "main": "./out/main.js",
   "contributes": {
@@ -93,6 +93,24 @@
           "command": "tsDev.copyPath",
           "when": "view == tsDev.baselines && viewItem == edited"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "io.orta.typescript-dev.declare-current-test-file",
+          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
+        },
+        {
+          "command": "io.orta.typescript-dev.run-current-test-file",
+          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
+        },
+        {
+          "command": "io.orta.typescript-dev.go-to-position",
+          "when": "editorFocus"
+        },
+        {
+          "command": "io.orta.typescript-dev.toggle-position",
+          "when": "editorFocus"
+        }
       ]
     },
     "commands": [
@@ -116,14 +134,24 @@
       {
         "command": "tsDev.copyPath",
         "title": "Copy Path"
+      },
+      {
+        "command": "io.orta.typescript-dev.go-to-position",
+        "title": "Go to position",
+        "category": "TSC"
+      },
+      {
+        "command": "io.orta.typescript-dev.toggle-position",
+        "title": "Toggle position indicator in status bar",
+        "category": "TSC"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "yarn esbuild-base -- --minify",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "build": "yarn esbuild-base -- --sourcemap",
-    "watch": "yarn esbuild-base -- --watch",
+    "build": "yarn esbuild-base --sourcemap",
+    "watch": "yarn esbuild-base --watch",
     "compile": "tsc -p ./",
     "pretest": "yarn run compile",
     "test": "jest"
@@ -133,16 +161,14 @@
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.36.0",
     "glob": "^7.1.4",
-    "mocha": "^6.1.4",
     "tslint": "^5.12.1",
-    "typescript": "^4.3.2"
-  },
-  "dependencies": {
+    "typescript": "^4.3.2",
     "@types/jest": "^26.0.23",
     "esbuild": "^0.12.5",
     "esbuild-jest": "^0.5.0",
     "jest": "^27.0.3"
   },
+  "dependencies": {},
   "prettier": {
     "printWidth": 140
   }
