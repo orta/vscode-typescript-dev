@@ -13,6 +13,8 @@ It's not too smart yet, but:
 
 ### Changed Baselines Info
 
+![](./screenshots/baselines.png)
+
 Shows up to 100 changed baselines with:
 
  - Jump to local/reference

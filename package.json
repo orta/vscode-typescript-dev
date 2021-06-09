@@ -1,8 +1,8 @@
 {
   "name": "vscode-typescript-dev",
   "displayName": "TSC Dev",
-  "description": "An extension for working in the TypeScript codebase",
-  "version": "0.0.2",
+  "description": "An extension only for working in the TypeScript compiler codebase",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/orta/vscode-typescript-dev"
@@ -17,7 +17,7 @@
   "activationEvents": [
     "workspaceContains:**/src/compiler/checker.ts"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/main.js",
   "contributes": {
     "views": {
       "explorer": [
@@ -120,9 +120,11 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
+    "vscode:prepublish": "yarn esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "build": "yarn esbuild-base -- --sourcemap",
+    "watch": "yarn esbuild-base -- --watch",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile",
     "test": "jest"
   },
