@@ -40,11 +40,19 @@ describe("edge cases", () => {
     const tests = [
       [
         "/tests/baselines/local/tsbuild/outfile-concat/incremental-headers-change-without-dts-changes/multiple-prologues-in-all-projects.js",
-        "/src/testRunner/unittests/tsbuild/amdModulesWithOut.ts:85",
+        "/src/testRunner/unittests/tsbuild/amdModulesWithOut.ts:xx",
+      ],
+      [
+        "/tests/baselines/local/tsbuild/moduleResolution/initial-build/type-reference-resolution-uses-correct-options-for-different-resolution-options-referenced-project.js",
+        "/src/testRunner/unittests/tsbuild/moduleResolution.ts:xx",
       ],
     ];
     for (const test of tests) {
-      expect(baseLineToTest(root + test[0])).toEqual(root + test[1]);
+      let res = baseLineToTest(root + test[0]);
+      if (res && res.includes(":")) {
+        res = res.split(":")[0] + ":xx";
+      }
+      expect(res).toEqual(root + test[1]);
     }
   });
 });

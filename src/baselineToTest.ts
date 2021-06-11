@@ -82,14 +82,18 @@ export const baselineToTester = (config: { tscRoot: string }) => {
       const filesInDirectory = fs.readdirSync(tsBuildTests);
 
       // Look through all the tsbuild test files, looking for a sub-scenario with the same name as the file
-      const scenario = `subscenario: "${name.replace(/-/g, " ")}"`.toLowerCase();
+      const scenarioQuote = `subscenario: "${name.replace(/-/g, " ")}"`.toLowerCase();
+      const scenarioBack = `subscenario: \`${name.replace(/-/g, " ")}\``.toLowerCase();
 
       for (const f of filesInDirectory) {
         const filepath = join(tsBuildTests, f);
         const content = fs.readFileSync(filepath, "utf8").toLowerCase();
 
-        if (content.includes(scenario)) {
-          const line = getLineForResultInString(scenario, content);
+        const gotQuote = content.includes(scenarioQuote);
+        const gotBacktick = content.includes(scenarioBack);
+        if (gotQuote || gotBacktick) {
+          const found = gotQuote ? scenarioQuote : scenarioBack;
+          const line = getLineForResultInString(found, content);
           const result = line !== -1 ? `${filepath}:${line}` : filepath;
           resultsCache.set(withoutExt, result);
           return result;

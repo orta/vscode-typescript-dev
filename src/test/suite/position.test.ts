@@ -1,7 +1,7 @@
 import * as assert from "assert";
-import { tryParseRangeExpression } from "../../position";
+import { tryParseRangeExpression } from "../../positionExpression";
 
-suite("Go To Position", () => {
+describe("Go To Position", () => {
   test("parses simple expressions", () => {
     assert.deepStrictEqual(tryParseRangeExpression("3"), [3, undefined]);
     assert.deepStrictEqual(tryParseRangeExpression("422424"), [422424, undefined]);
