@@ -32,12 +32,12 @@ export function activate(context: vscode.ExtensionContext) {
   const diffTool = vscode.commands.registerCommand("tsDev.openDiffTool", () => require("child_process").exec("gulp diff"));
 
   const open = vscode.commands.registerCommand("tsDev.openReferenceShort", (item: TreeNode) => {
-    vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(item.uri.fsPath.replace("local", "reference")));
+    vscode.commands.executeCommand("vscode.open", vscode.Uri.file(item.uri.fsPath.replace("local", "reference")));
   });
 
   const diff = vscode.commands.registerCommand("tsDev.openDiffShort", (item: TreeNode) => {
-    const local = vscode.Uri.parse(item.uri.fsPath);
-    const ref = vscode.Uri.parse(item.uri.fsPath.replace("local", "reference"));
+    const local = vscode.Uri.file(item.uri.fsPath);
+    const ref = vscode.Uri.file(item.uri.fsPath.replace("local", "reference"));
     vscode.commands.executeCommand("vscode.diff", ref, local, `Diff for ${item.display}`);
   });
 
@@ -54,10 +54,10 @@ export function activate(context: vscode.ExtensionContext) {
       const [path, line] = testFile.split(":");
       const opts: vscode.TextDocumentShowOptions = line
         ? {
-            selection: new vscode.Range(new vscode.Position(Number(line), 0), new vscode.Position(Number(line), 0)),
-          }
+          selection: new vscode.Range(new vscode.Position(Number(line), 0), new vscode.Position(Number(line), 0)),
+        }
         : {};
-      vscode.commands.executeCommand("vscode.open", vscode.Uri.parse(path), opts);
+      vscode.commands.executeCommand("vscode.open", vscode.Uri.file(path), opts);
     }
   });
 
