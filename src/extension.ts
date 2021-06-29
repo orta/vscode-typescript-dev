@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
   const diff = vscode.commands.registerCommand("tsDev.openDiffShort", (item: TreeNode) => {
     const local = vscode.Uri.parse(item.uri.fsPath);
     const ref = vscode.Uri.parse(item.uri.fsPath.replace("local", "reference"));
-    vscode.commands.executeCommand("vscode.diff", local, ref, `Diff for ${item.display}`);
+    vscode.commands.executeCommand("vscode.diff", ref, local, `Diff for ${item.display}`);
   });
 
   const test = vscode.commands.registerCommand("tsDev.openTestShort", (item: TreeNode) => {
