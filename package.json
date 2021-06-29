@@ -2,7 +2,7 @@
   "name": "vscode-typescript-dev",
   "displayName": "TSC Dev",
   "description": "An extension only for working in the TypeScript compiler codebase",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/orta/vscode-typescript-dev"
