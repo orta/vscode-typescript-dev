@@ -96,14 +96,6 @@
       ],
       "commandPalette": [
         {
-          "command": "io.orta.typescript-dev.declare-current-test-file",
-          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
-        },
-        {
-          "command": "io.orta.typescript-dev.run-current-test-file",
-          "when": "io.orta.typescript-dev.isTypeScriptCodeBase"
-        },
-        {
           "command": "io.orta.typescript-dev.go-to-position",
           "when": "editorFocus"
         },
