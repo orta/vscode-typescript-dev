@@ -68,7 +68,7 @@ export const twoslashCompetions: vscode.CompletionItemProvider = {
     const workspace = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor!.document.uri);
     if (!workspace) return;
 
-    const workspaceRoot = workspace.uri.toString().replace("file://", "");
+    const workspaceRoot = workspace.uri.fsPath;
     const theirTS = require(workspaceRoot + "/node_modules/typescript");
     if (!theirTS) {
       vscode.window.showErrorMessage(`TSC Dev Ext: Could not find a copy of TypeScript at ${workspaceRoot + "/node_modules/typescript"}`);
